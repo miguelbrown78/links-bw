@@ -108,3 +108,13 @@ components/   # Componentes reutilizables
 constants/    # Colores y constantes
 hooks/        # Custom hooks
 ```
+
+
+## Usar el template
+
+**Desde GitHub** — botón verde "Use this template" en el repositorio.
+
+**Desde terminal:**
+```bash
+pnpm create expo-app@latest mi-app --template https://github.com/miguelbrown78/expo-template-browny
+```
