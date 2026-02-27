@@ -5,29 +5,50 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import colores from '@/styles/colors';
+import tipografia from '@/styles/typography';
+import { TemaProvider, useTema } from '@/context/TemaContext';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import {
+  PlusJakartaSans_400Regular,
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_600SemiBold,
+  PlusJakartaSans_700Bold,
+} from '@expo-google-fonts/plus-jakarta-sans';
+
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+} from '@expo-google-fonts/inter';
+
+import {
+  JetBrainsMono_400Regular,
+} from '@expo-google-fonts/jetbrains-mono';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    JetBrainsMono_400Regular,
     ...FontAwesome.font,
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -42,17 +63,29 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <TemaProvider>
+      <NavegacionInterna />
+    </TemaProvider>
+  );
 }
 
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+function NavegacionInterna() {
+  const { tema } = useTema();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={tema === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="preview"
+          options={{
+            title: 'Guia de estilos',
+            headerStyle: { backgroundColor: colores.dark.card },
+            headerTintColor: colores.primario,
+            headerTitleStyle: { fontFamily: tipografia.fuentes.titulo },
+          }}
+        />
       </Stack>
     </ThemeProvider>
   );
