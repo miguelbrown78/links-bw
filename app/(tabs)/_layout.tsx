@@ -3,26 +3,10 @@ import { Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
 import { colores, tipografia } from '@/styles';
 import { useTema } from '@/context/TemaContext';
-
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
-}
-
-function BotonTema() {
-  const { tema, cambiarTema } = useTema();
-  return (
-    <Pressable onPress={cambiarTema} style={{ marginRight: 16, padding: 4 }}>
-      <FontAwesome
-        name={tema === 'dark' ? 'sun-o' : 'moon-o'}
-        size={20}
-        color={colores.primario}
-      />
-    </Pressable>
-  );
-}
+import { useAuth } from '@/context/AuthContext';
+import { View } from 'react-native';
+import { espaciado } from '@/styles';
+import { Image } from 'react-native';
 
 export default function TabLayout() {
   const { tema } = useTema();
@@ -48,8 +32,19 @@ export default function TabLayout() {
         headerShown: true,
         headerStyle: { backgroundColor: c.card },
         headerTintColor: c.texto,
-        headerTitleStyle: { fontFamily: tipografia.fuentes.titulo },
-        headerRight: () => <BotonTema />,
+        headerTitle: () => (
+          <Image
+            source={require('../../assets/images/logo.png')}
+            style={{ width: 120, height: 36 }}
+            resizeMode="contain"
+          />
+        ),
+        headerRight: () => (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: espaciado.md, marginRight: espaciado.lg }}>
+            <BotonTema />
+            <BotonLogout />
+          </View>
+        ),
       }}
     >
       <Tabs.Screen
@@ -74,5 +69,41 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+  );
+}
+
+
+/********************************************** */
+
+function TabBarIcon(props: {
+  name: React.ComponentProps<typeof FontAwesome>['name'];
+  color: string;
+}) {
+  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
+}
+
+function BotonTema() {
+  const { tema, cambiarTema } = useTema();
+  return (
+    <Pressable onPress={cambiarTema} style={{ marginRight: 16, padding: 4 }}>
+      <FontAwesome
+        name={tema === 'dark' ? 'sun-o' : 'moon-o'}
+        size={20}
+        color={colores.primario}
+      />
+    </Pressable>
+  );
+}
+
+function BotonLogout() {
+  const { logout } = useAuth();
+  return (
+    <Pressable onPress={logout} style={{ padding: 4 }}>
+      <FontAwesome
+        name="sign-out"
+        size={20}
+        color={colores.primario}
+      />
+    </Pressable>
   );
 }

@@ -1,13 +1,14 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import colores from '@/styles/colors';
 import tipografia from '@/styles/typography';
 import { TemaProvider, useTema } from '@/context/TemaContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 import {
   PlusJakartaSans_400Regular,
@@ -21,6 +22,11 @@ import {
   Inter_500Medium,
   Inter_600SemiBold,
 } from '@expo-google-fonts/inter';
+
+import {
+  Jost_600SemiBold,
+  Jost_700Bold,
+} from '@expo-google-fonts/jost';
 
 import {
   JetBrainsMono_400Regular,
@@ -46,6 +52,8 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     JetBrainsMono_400Regular,
+    Jost_600SemiBold,
+    Jost_700Bold,
     ...FontAwesome.font,
   });
 
@@ -65,18 +73,36 @@ export default function RootLayout() {
 
   return (
     <TemaProvider>
-      <NavegacionInterna />
+      <AuthProvider>
+        <NavegacionInterna />
+      </AuthProvider>
     </TemaProvider>
   );
 }
 
 function NavegacionInterna() {
   const { tema } = useTema();
+  const { usuario, cargando } = useAuth();
+  const router = useRouter();
+  const segments = useSegments();
+
+  useEffect(() => {
+    if (cargando) return;
+
+    const enLogin = segments[0] === 'login';
+
+    if (!usuario && !enLogin) {
+      router.replace('/login');
+    } else if (usuario && enLogin) {
+      router.replace('/(tabs)');
+    }
+  }, [usuario, cargando, segments]);
 
   return (
     <ThemeProvider value={tema === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen
           name="preview"
           options={{

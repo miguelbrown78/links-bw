@@ -16,7 +16,7 @@ export default function Preview() {
       {/* FUENTES */}
       <Text style={[styles.seccion, { color: colores.primario }]}>Fuentes</Text>
 
-      <Text style={[styles.grupo, { color: c.muted }]}>Plus Jakarta Sans</Text>
+      <Text style={[styles.grupo, { color: c.muted }]}>Jost</Text>
       <Text style={{ fontFamily: tipografia.fuentes.titulo, fontSize: tipografia.sizes.xl, color: c.texto, marginBottom: espaciado.sm }}>
         Bold — Links Browny
       </Text>
@@ -45,28 +45,28 @@ export default function Preview() {
 
       <Text style={[styles.grupo, { color: c.muted }]}>Globales</Text>
       <View style={styles.fila}>
-        <Muestra color={colores.primario}   etiqueta="primario"   muted={c.muted} />
+        <Muestra color={colores.primario} etiqueta="primario" muted={c.muted} />
         <Muestra color={colores.secundario} etiqueta="secundario" muted={c.muted} />
-        <Muestra color={colores.error}      etiqueta="error"      muted={c.muted} />
-        <Muestra color={colores.success}    etiqueta="success"    muted={c.muted} />
+        <Muestra color={colores.error} etiqueta="error" muted={c.muted} />
+        <Muestra color={colores.success} etiqueta="success" muted={c.muted} />
       </View>
 
       <Text style={[styles.grupo, { color: c.muted }]}>Dark</Text>
       <View style={styles.fila}>
-        <Muestra color={colores.dark.fondo}  etiqueta="fondo"  muted={c.muted} />
-        <Muestra color={colores.dark.card}   etiqueta="card"   muted={c.muted} />
-        <Muestra color={colores.dark.texto}  etiqueta="texto"  muted={c.muted} />
-        <Muestra color={colores.dark.muted}  etiqueta="muted"  muted={c.muted} />
-        <Muestra color={colores.dark.borde}  etiqueta="borde"  muted={c.muted} />
+        <Muestra color={colores.dark.fondo} etiqueta="fondo" muted={c.muted} />
+        <Muestra color={colores.dark.card} etiqueta="card" muted={c.muted} />
+        <Muestra color={colores.dark.texto} etiqueta="texto" muted={c.muted} />
+        <Muestra color={colores.dark.muted} etiqueta="muted" muted={c.muted} />
+        <Muestra color={colores.dark.borde} etiqueta="borde" muted={c.muted} />
       </View>
 
       <Text style={[styles.grupo, { color: c.muted }]}>Light</Text>
       <View style={styles.fila}>
-        <Muestra color={colores.light.fondo}  etiqueta="fondo"  muted={c.muted} />
-        <Muestra color={colores.light.card}   etiqueta="card"   muted={c.muted} />
-        <Muestra color={colores.light.texto}  etiqueta="texto"  muted={c.muted} />
-        <Muestra color={colores.light.muted}  etiqueta="muted"  muted={c.muted} />
-        <Muestra color={colores.light.borde}  etiqueta="borde"  muted={c.muted} />
+        <Muestra color={colores.light.fondo} etiqueta="fondo" muted={c.muted} />
+        <Muestra color={colores.light.card} etiqueta="card" muted={c.muted} />
+        <Muestra color={colores.light.texto} etiqueta="texto" muted={c.muted} />
+        <Muestra color={colores.light.muted} etiqueta="muted" muted={c.muted} />
+        <Muestra color={colores.light.borde} etiqueta="borde" muted={c.muted} />
       </View>
 
       {/* TIPOGRAFIA */}

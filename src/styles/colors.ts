@@ -1,25 +1,52 @@
 // ─── Paleta ───────────────────────────────────────────────
-export const COLOR_1 = '#f55b68';
+export const COLOR_1 = '#a21d30';
+
 const colores = {
-  primario:   '#f55b68',
+  primario:   '#a21d30',
   secundario: '#8B5CF6',
   error:      '#EF4444',
   success:    '#22C55E',
 
   dark: {
     fondo:    '#0f0001',
-    card:     '#1b0002',
+    card:     '#0f0f0f',
     texto:    '#ffe5e7',
-    muted:    '#8a5a5e',
+    muted:    '#a59495',
     borde:    '#542428',
   },
 
   light: {
     fondo:    '#fff0f1',
-    card:     '#ffe9ea',
+    card:     '#ffffff',
     texto:    '#1b0002',
-    muted:    '#ffbcc2',
+    muted:    '#cbb2b4',
     borde:    '#ffdfe2',
+  },
+
+  componentes: {
+    boton: {
+      texto: '#ffffff',
+      dark: {
+        primarioHover:    '#f76e7a',
+        primarioPress:    '#f77d87',
+        secundarioHover:  '#9b6ef7',
+        secundarioPress:  '#a37ef8',
+        destructivoHover: '#f25f5f',
+        destructivoPress: '#f47070',
+        fantasmaHover:    '#f55b6822',
+        fantasmaPress:    '#f55b6844',
+      },
+      light: {
+        primarioHover:    '#e04452',
+        primarioPress:    '#cc3a47',
+        secundarioHover:  '#7a4de0',
+        secundarioPress:  '#6a3ecc',
+        destructivoHover: '#d93333',
+        destructivoPress: '#c42a2a',
+        fantasmaHover:    '#f55b6833',
+        fantasmaPress:    '#f55b6855',
+      },
+    },
   },
 };
 

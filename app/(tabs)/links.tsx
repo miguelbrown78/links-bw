@@ -1,9 +1,10 @@
+import CardInstagram from '@/components/links/CardInstagram';
 import Boton from '@/components/Boton';
 import { useTema } from '@/context/TemaContext';
-import { Link, traerLinks } from '@/services/links';
+import { traerLinks, Link } from '@/services/links';
 import { colores, espaciado, tipografia } from '@/styles';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 
 type Vista = 'instagram' | 'explorer';
 
@@ -36,7 +37,7 @@ export default function MisLinks() {
   return (
     <View style={styles.container}>
 
-      {/* Barra de vistas */}
+      {/* ── Barra de vistas ── */}
       <View style={styles.barraVistas}>
         <Boton
           tipo="primario"
@@ -54,13 +55,14 @@ export default function MisLinks() {
         />
       </View>
 
-      {/* Estados */}
+      {/* ── Cargando ── */}
       {cargando && (
         <View style={styles.centro}>
           <ActivityIndicator size="large" color={colores.primario} />
         </View>
       )}
 
+      {/* ── Error ── */}
       {!cargando && error && (
         <View style={styles.centro}>
           <Text style={styles.textoError}>{error}</Text>
@@ -68,14 +70,29 @@ export default function MisLinks() {
         </View>
       )}
 
+      {/* ── Sin links ── */}
       {!cargando && !error && links.length === 0 && (
         <View style={styles.centro}>
           <Text style={styles.textoMuted}>No tienes links guardados aún.</Text>
         </View>
       )}
 
-      {!cargando && !error && links.length > 0 && (
-        <Text style={styles.textoMuted}>{links.length} links cargados ✓</Text>
+      {/* ── Vista Instagram ── */}
+      {!cargando && !error && links.length > 0 && vista === 'instagram' && (
+        <FlatList
+          data={links}
+          keyExtractor={(item) => String(item.link_id)}
+          renderItem={({ item }) => <CardInstagram link={item} />}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.lista}
+        />
+      )}
+
+      {/* ── Vista Explorer (próximamente) ── */}
+      {!cargando && !error && links.length > 0 && vista === 'explorer' && (
+        <View style={styles.centro}>
+          <Text style={styles.textoMuted}>Vista Explorer — próximamente</Text>
+        </View>
       )}
 
     </View>
@@ -95,6 +112,9 @@ function crearEstilos(c: typeof colores.dark) {
       paddingHorizontal: espaciado.lg,
       paddingVertical: espaciado.md,
       gap: espaciado.sm,
+      backgroundColor: c.card,
+      borderBottomWidth: 1,
+      borderBottomColor: c.borde,
     },
     centro: {
       flex: 1,
@@ -110,10 +130,12 @@ function crearEstilos(c: typeof colores.dark) {
     },
     textoMuted: {
       textAlign: 'center',
-      marginTop: espaciado.xl,
       fontFamily: tipografia.fuentes.cuerpo,
       fontSize: tipografia.sizes.md,
       color: c.muted,
+    },
+    lista: {
+      paddingBottom: espaciado.xl,
     },
   });
 }

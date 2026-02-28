@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Links Browny",
+    "name": "Blinks",
     "slug": "links-bw",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -40,10 +40,7 @@
             "NSExtensionActivationSupportsText": true,
             "NSExtensionActivationSupportsImageWithMaxCount": 1
           },
-          "androidIntentFilters": [
-            "text/*",
-            "image/*"
-          ]
+          "androidIntentFilters": ["text/*", "image/*"]
         }
       ],
       "expo-secure-store"
