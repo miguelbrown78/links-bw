@@ -1,12 +1,9 @@
+import { useAuth } from '@/context/AuthContext';
+import { useTema } from '@/context/TemaContext';
+import { colores, espaciado, tipografia } from '@/styles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
-import { colores, tipografia } from '@/styles';
-import { useTema } from '@/context/TemaContext';
-import { useAuth } from '@/context/AuthContext';
-import { View } from 'react-native';
-import { espaciado } from '@/styles';
-import { Image } from 'react-native';
+import { Image, Pressable, View } from 'react-native';
 
 export default function TabLayout() {
   const { tema } = useTema();
@@ -30,7 +27,11 @@ export default function TabLayout() {
           fontWeight: tipografia.pesos.medium as any,
         },
         headerShown: true,
-        headerStyle: { backgroundColor: c.card },
+        headerStyle: { 
+          backgroundColor: c.fondo,            
+          borderBottomWidth: 0,
+          borderBottomColor: c.borde,
+        },
         headerTintColor: c.texto,
         headerTitle: () => (
           <Image

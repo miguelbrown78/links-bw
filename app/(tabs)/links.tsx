@@ -1,7 +1,7 @@
-import CardInstagram from '@/components/links/CardInstagram';
 import Boton from '@/components/Boton';
+import CardInstagram from '@/components/links/CardInstagram';
 import { useTema } from '@/context/TemaContext';
-import { traerLinks, Link } from '@/services/links';
+import { Link, traerLinks } from '@/services/links';
 import { colores, espaciado, tipografia } from '@/styles';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
@@ -112,8 +112,8 @@ function crearEstilos(c: typeof colores.dark) {
       paddingHorizontal: espaciado.lg,
       paddingVertical: espaciado.md,
       gap: espaciado.sm,
-      backgroundColor: c.card,
-      borderBottomWidth: 1,
+      /*backgroundColor: c.card,*/
+      /*borderBottomWidth: 1,*/
       borderBottomColor: c.borde,
     },
     centro: {

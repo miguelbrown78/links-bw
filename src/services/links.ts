@@ -21,6 +21,7 @@ export interface Link {
   autor_email: string;
   tags_nombres: string | null;
   tags_ids: string | null;
+  categoria_color: string | null;
   // Campo derivado — array de tags listo para usar
   tags: string[];
 }
