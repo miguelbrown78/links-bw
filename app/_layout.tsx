@@ -9,6 +9,9 @@ import colores from '@/styles/colors';
 import tipografia from '@/styles/typography';
 import { TemaProvider, useTema } from '@/context/TemaContext';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
+import { useDragAndDrop } from '@/hooks/useDragAndDrop';
+import OverlayDrop from '@/components/OverlayDrop';
 
 import {
   PlusJakartaSans_400Regular,
@@ -72,20 +75,25 @@ export default function RootLayout() {
   }
 
   return (
-    <TemaProvider>
-      <AuthProvider>
-        <NavegacionInterna />
-      </AuthProvider>
-    </TemaProvider>
+    <ShareIntentProvider>
+      <TemaProvider>
+        <AuthProvider>
+          <NavegacionInterna />
+        </AuthProvider>
+      </TemaProvider>
+    </ShareIntentProvider>
   );
 }
 
 function NavegacionInterna() {
   const { tema } = useTema();
   const { usuario, cargando } = useAuth();
+  const { hasShareIntent, shareIntent, resetShareIntent } = useShareIntentContext();
+  const { arrastrando } = useDragAndDrop();
   const router = useRouter();
   const segments = useSegments();
 
+  // Redirección por auth
   useEffect(() => {
     if (cargando) return;
 
@@ -97,6 +105,20 @@ function NavegacionInterna() {
       router.replace('/(tabs)');
     }
   }, [usuario, cargando, segments]);
+
+  // Redirección por share intent
+  useEffect(() => {
+    if (!hasShareIntent) return;
+    if (cargando || !usuario) return;
+
+    const url = shareIntent.text ?? '';
+    if (url) {
+      router.push({
+        pathname: '/guardar-link',
+        params: { urlCompartida: url },
+      });
+    }
+  }, [hasShareIntent, shareIntent, cargando, usuario]);
 
   return (
     <ThemeProvider value={tema === 'dark' ? DarkTheme : DefaultTheme}>
@@ -123,6 +145,7 @@ function NavegacionInterna() {
           }}
         />
       </Stack>
+      <OverlayDrop visible={arrastrando} />
     </ThemeProvider>
   );
 }

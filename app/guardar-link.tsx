@@ -5,7 +5,7 @@ import { colores, espaciado, tipografia } from '@/styles';
 import { useTema } from '@/context/TemaContext';
 import ModalCategoria from '@/components/ModalCategoria';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -33,6 +33,7 @@ export default function GuardarLink() {
   const c = tema === 'dark' ? colores.dark : colores.light;
   const styles = crearEstilos(c);
   const router = useRouter();
+  const { urlCompartida } = useLocalSearchParams<{ urlCompartida?: string }>();
 
   // ── Campos del formulario ──
   const [url, setUrl] = useState('');
@@ -63,6 +64,13 @@ export default function GuardarLink() {
   useEffect(() => {
     cargarCategorias();
   }, []);
+
+  // ── Inyectar URL compartida al montar ──
+  useEffect(() => {
+    if (urlCompartida) {
+      alCambiarUrl(urlCompartida);
+    }
+  }, [urlCompartida]);
 
   async function cargarCategorias() {
     try {
@@ -188,11 +196,19 @@ export default function GuardarLink() {
           <Text style={styles.label}>Nombre</Text>
           <View style={styles.inputRow}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, styles.inputMultilinea]}
               value={nombre}
               onChangeText={setNombre}
               placeholder="Nombre del link"
               placeholderTextColor={c.muted}
+              multiline
+              numberOfLines={4}
+              blurOnSubmit={true}
+              onKeyPress={({ nativeEvent }) => {
+                if (nativeEvent.key === 'Enter') {
+                  // bloquear intro — no hace nada
+                }
+              }}
             />
             {nombre.length > 0 && (
               <Pressable onPress={() => setNombre('')}>
@@ -464,6 +480,11 @@ function crearEstilos(c: typeof colores.dark) {
       fontFamily: tipografia.fuentes.ui,
       fontSize: tipografia.sizes.md,
       color: '#fff',
+    },
+    inputMultilinea: {
+      paddingVertical: espaciado.md,
+      textAlignVertical: 'top',
+      minHeight: 72,
     },
   });
 }
