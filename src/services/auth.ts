@@ -1,6 +1,7 @@
-import { guardar, eliminar, obtener } from '@/services/storage';
+import { API_BASE } from '@/constants/api';
+import { eliminar, guardar, obtener } from '@/services/storage';
 
-const API = 'https://agendaapi.browny.es/links2';
+const API = API_BASE;
 
 export interface Usuario {
   users_id: number;

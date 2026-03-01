@@ -1,6 +1,7 @@
+import { API_BASE } from '@/constants/api';
 import { obtener } from '@/services/storage';
 
-const API = 'https://agendaapi.browny.es/links2';
+const API = API_BASE;
 
 // ─── Tipo Link ────────────────────────────────────────────
 export interface Link {
@@ -22,6 +23,7 @@ export interface Link {
   tags_nombres: string | null;
   tags_ids: string | null;
   categoria_color: string | null;
+  link_ruta_img: string | null;
   // Campo derivado — array de tags listo para usar
   tags: string[];
 }
@@ -42,7 +44,7 @@ export async function traerLinks(): Promise<Link[]> {
       'X-Auth-Token': token,
     },
     body: JSON.stringify({
-      sql: 'SELECT * FROM view_links_completa WHERE users_id = :user_id ORDER BY link_DATE_INSERT DESC',
+      sql: 'SELECT * FROM view_links_completa WHERE users_id = :user_id ORDER BY link_DATE_INSERT DESC LIMIT 5',
       params: { ':user_id': parseInt(userId) },
     }),
   });

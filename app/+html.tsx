@@ -17,10 +17,27 @@ export default function Root({ children }: { children: React.ReactNode }) {
 
 const responsiveBackground = `
 body {
-  background-color: #0F1117;
+  background-color: #0f0001;
 }
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: #0F1117;
+    background-color: #0f0001;
   }
-}`;
+}
+
+/* Scrollbar web */
+*::-webkit-scrollbar {
+  width: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #542428;
+  border-radius: 999px;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #542428 transparent;
+}
+`;

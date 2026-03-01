@@ -4,7 +4,7 @@ import { useTema } from '@/context/TemaContext';
 import { Link, traerLinks } from '@/services/links';
 import { colores, espaciado, tipografia } from '@/styles';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 type Vista = 'instagram' | 'explorer';
 
@@ -79,13 +79,15 @@ export default function MisLinks() {
 
       {/* ── Vista Instagram ── */}
       {!cargando && !error && links.length > 0 && vista === 'instagram' && (
-        <FlatList
-          data={links}
-          keyExtractor={(item) => String(item.link_id)}
-          renderItem={({ item }) => <CardInstagram link={item} />}
-          showsVerticalScrollIndicator={false}
+        <ScrollView
+          style={styles.scroll}
           contentContainerStyle={styles.lista}
-        />
+          showsVerticalScrollIndicator={true}
+        >
+          {links.map((item) => (
+            <CardInstagram key={String(item.link_id)} link={item} />
+          ))}
+        </ScrollView>
       )}
 
       {/* ── Vista Explorer (próximamente) ── */}
@@ -112,8 +114,6 @@ function crearEstilos(c: typeof colores.dark) {
       paddingHorizontal: espaciado.lg,
       paddingVertical: espaciado.md,
       gap: espaciado.sm,
-      /*backgroundColor: c.card,*/
-      /*borderBottomWidth: 1,*/
       borderBottomColor: c.borde,
     },
     centro: {
@@ -133,6 +133,9 @@ function crearEstilos(c: typeof colores.dark) {
       fontFamily: tipografia.fuentes.cuerpo,
       fontSize: tipografia.sizes.md,
       color: c.muted,
+    },
+    scroll: {
+      flex: 1,
     },
     lista: {
       paddingBottom: espaciado.xl,

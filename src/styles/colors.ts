@@ -10,12 +10,12 @@ const colores = {
   tag: '#F97316',
 
   dark: {
-  fondo: '#0f0001',
+  fondo: '#080808ff',
   card: '#0f0f0f',
   texto: '#ffe5e7',
   textoSecundario: '#d4868f',  // ← nuevo
   muted: '#a59495',
-  borde: '#542428',
+  borde: '#1f1314ff',
 },
 
 light: {
