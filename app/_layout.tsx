@@ -112,6 +112,16 @@ function NavegacionInterna() {
             headerTitleStyle: { fontFamily: tipografia.fuentes.titulo },
           }}
         />
+        <Stack.Screen
+          name="guardar-link"
+          options={{
+            presentation: 'modal',
+            title: 'Guardar link',
+            headerStyle: { backgroundColor: tema === 'dark' ? colores.dark.card : colores.light.card },
+            headerTintColor: colores.primario,
+            headerTitleStyle: { fontFamily: tipografia.fuentes.titulo },
+          }}
+        />
       </Stack>
     </ThemeProvider>
   );

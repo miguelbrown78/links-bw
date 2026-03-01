@@ -2,12 +2,11 @@ import { useAuth } from '@/context/AuthContext';
 import { useTema } from '@/context/TemaContext';
 import { colores, espaciado, tipografia } from '@/styles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import { Image, Pressable, View } from 'react-native';
 
 export default function TabLayout() {
   const { tema } = useTema();
-
   const c = tema === 'dark' ? colores.dark : colores.light;
 
   return (
@@ -27,8 +26,8 @@ export default function TabLayout() {
           fontWeight: tipografia.pesos.medium as any,
         },
         headerShown: true,
-        headerStyle: { 
-          backgroundColor: c.fondo,            
+        headerStyle: {
+          backgroundColor: c.fondo,
           borderBottomWidth: 0,
           borderBottomColor: c.borde,
         },
@@ -42,6 +41,7 @@ export default function TabLayout() {
         ),
         headerRight: () => (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: espaciado.md, marginRight: espaciado.lg }}>
+            <BotonNuevoLink />
             <BotonTema />
             <BotonLogout />
           </View>
@@ -73,14 +73,22 @@ export default function TabLayout() {
   );
 }
 
-
-/********************************************** */
+/***********************************************/
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
 }) {
   return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
+}
+
+function BotonNuevoLink() {
+  const router = useRouter();
+  return (
+    <Pressable onPress={() => router.push('/guardar-link')} style={{ padding: 4 }}>
+      <FontAwesome name="plus-circle" size={20} color={colores.primario} />
+    </Pressable>
+  );
 }
 
 function BotonTema() {

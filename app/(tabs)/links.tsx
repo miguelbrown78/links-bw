@@ -3,7 +3,8 @@ import CardInstagram from '@/components/links/CardInstagram';
 import { useTema } from '@/context/TemaContext';
 import { Link, traerLinks } from '@/services/links';
 import { colores, espaciado, tipografia } from '@/styles';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 type Vista = 'instagram' | 'explorer';
@@ -17,10 +18,11 @@ export default function MisLinks() {
   const [error, setError] = useState<string | null>(null);
   const styles = crearEstilos(c);
 
-  useEffect(() => {
-    cargarLinks();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      cargarLinks();
+    }, [])
+  );
   async function cargarLinks() {
     try {
       setCargando(true);
