@@ -9,19 +9,31 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <ScrollViewStyleReset />
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
+        <script dangerouslySetInnerHTML={{ __html: scriptTema }} />
       </head>
       <body>{children}</body>
     </html>
   );
 }
 
+const scriptTema = `
+(function() {
+  try {
+    var tema = localStorage.getItem('tema');
+    var fondo = tema === 'light' ? '#fff0f1' : '#080808ff';
+    document.documentElement.style.backgroundColor = fondo;
+    document.body.style.backgroundColor = fondo;
+  } catch(e) {}
+})();
+`;
+
 const responsiveBackground = `
 body {
-  background-color: #0f0001;
+  background-color: #080808ff;
 }
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: #0f0001;
+    background-color: #080808ff;
   }
 }
 

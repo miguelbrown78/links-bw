@@ -9,6 +9,7 @@ import colores from '@/styles/colors';
 import tipografia from '@/styles/typography';
 import { TemaProvider, useTema } from '@/context/TemaContext';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { BuscadorProvider } from '@/context/BuscadorContext';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import { useDragAndDrop } from '@/hooks/useDragAndDrop';
 import OverlayDrop from '@/components/OverlayDrop';
@@ -78,7 +79,9 @@ export default function RootLayout() {
     <ShareIntentProvider>
       <TemaProvider>
         <AuthProvider>
-          <NavegacionInterna />
+          <BuscadorProvider>
+            <NavegacionInterna />
+          </BuscadorProvider>
         </AuthProvider>
       </TemaProvider>
     </ShareIntentProvider>
@@ -93,12 +96,9 @@ function NavegacionInterna() {
   const router = useRouter();
   const segments = useSegments();
 
-  // Redirección por auth
   useEffect(() => {
     if (cargando) return;
-
     const enLogin = segments[0] === 'login';
-
     if (!usuario && !enLogin) {
       router.replace('/login');
     } else if (usuario && enLogin) {
@@ -106,11 +106,9 @@ function NavegacionInterna() {
     }
   }, [usuario, cargando, segments]);
 
-  // Redirección por share intent
   useEffect(() => {
     if (!hasShareIntent) return;
     if (cargando || !usuario) return;
-
     const url = shareIntent.text ?? '';
     if (url) {
       router.push({

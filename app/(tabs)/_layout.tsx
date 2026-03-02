@@ -1,10 +1,26 @@
 import { useAuth } from '@/context/AuthContext';
 import { useTema } from '@/context/TemaContext';
 import { colores, espaciado, tipografia } from '@/styles';
+import BuscadorHeader from '@/components/BuscadorHeader';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs, useRouter } from 'expo-router';
 import { Image, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Boton from '@/components/Boton';
+import MenuApp from '@/components/MenuApp';
+
+function HeaderConBuscador() {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+      <Image
+        source={require('../../assets/images/logo.png')}
+        style={{ width: 90 }}
+        resizeMode="contain"
+      />
+      <BuscadorHeader />
+    </View>
+  );
+}
 
 export default function TabLayout() {
   const { tema } = useTema();
@@ -34,18 +50,11 @@ export default function TabLayout() {
           borderBottomColor: c.borde,
         },
         headerTintColor: c.texto,
-        headerTitle: () => (
-          <Image
-            source={require('../../assets/images/logo.png')}
-            style={{ width: 120, height: 36 }}
-            resizeMode="contain"
-          />
-        ),
+        headerTitle: () => <HeaderConBuscador />,
         headerRight: () => (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: espaciado.md, marginRight: espaciado.lg }}>
             <BotonNuevoLink />
-            <BotonTema />
-            <BotonLogout />
+            <MenuApp />
           </View>
         ),
       }}
@@ -87,9 +96,12 @@ function TabBarIcon(props: {
 function BotonNuevoLink() {
   const router = useRouter();
   return (
-    <Pressable onPress={() => router.push('/guardar-link')} style={{ padding: 4 }}>
-      <FontAwesome name="plus-circle" size={20} color={colores.primario} />
-    </Pressable>
+    <Boton
+      tipo="primario"
+      label="Añadir"
+      icono="plus-circle"
+      onPress={() => router.push('/guardar-link')}
+    />
   );
 }
 

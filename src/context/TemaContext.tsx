@@ -18,12 +18,14 @@ const TemaContext = createContext<TemaContextType>({
 // ─── Provider ─────────────────────────────────────────────
 export function TemaProvider({ children }: { children: React.ReactNode }) {
   const [tema, setTema] = useState<Tema>('dark');
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     obtener('tema').then((valor) => {
       if (valor === 'dark' || valor === 'light') {
         setTema(valor);
       }
+      setCargando(false);
     });
   }, []);
 
@@ -32,6 +34,8 @@ export function TemaProvider({ children }: { children: React.ReactNode }) {
     setTema(nuevoTema);
     guardar('tema', nuevoTema);
   };
+
+  if (cargando) return null;
 
   return (
     <TemaContext.Provider value={{ tema, cambiarTema }}>

@@ -5,6 +5,13 @@ import { colores, espaciado, tipografia } from '@/styles';
 import { FontAwesome } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { Image, Linking, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import MenuCard from '@/components/links/MenuCard';
+
+const ANCHO_CONTAINER = 950;
+const IMG_MIN_RATIO = 4 / 5;
+const IMG_MAX_RATIO = 1.91;
+const ALTURA_NO_IMG = 80;
+const IMG_ALTURA_MAX = 400;
 
 interface CardInstagramProps {
   link: Link;
@@ -90,12 +97,19 @@ const estilosBoton = StyleSheet.create({
   } as any,
 });
 
+interface CardInstagramProps {
+  link: Link;
+  onEliminado: () => void;
+  onMovido: () => void;
+}
+
 // ─── CardInstagram ────────────────────────────────────────
-export default function CardInstagram({ link }: CardInstagramProps) {
+export default function CardInstagram({ link, onEliminado, onMovido }: CardInstagramProps) {
+
   const { tema } = useTema();
   const c = tema === 'dark' ? colores.dark : colores.light;
   const { width } = useWindowDimensions();
-  const cardWidth = Math.min(470, width);
+  const cardWidth = Math.min(ANCHO_CONTAINER, width);
   const [imageRatio, setImageRatio] = useState<number | null>(null);
 
   const urlImagen = link.link_ruta_img ? `${API_BASE}/${link.link_ruta_img}` : null;
@@ -106,9 +120,7 @@ export default function CardInstagram({ link }: CardInstagramProps) {
         urlImagen,
         (w, h) => {
           const ratio = w / h;
-          const MIN_RATIO = 4 / 5;
-          const MAX_RATIO = 1.91;
-          setImageRatio(Math.min(MAX_RATIO, Math.max(MIN_RATIO, ratio)));
+          setImageRatio(Math.min(IMG_MAX_RATIO, Math.max(IMG_MIN_RATIO, ratio)));
         },
         () => setImageRatio(null)
       );
@@ -143,27 +155,33 @@ export default function CardInstagram({ link }: CardInstagramProps) {
           <Text style={styles.fecha}>{fecha}</Text>
         </View>
 
-        <TouchableOpacity style={styles.menuBoton} onPress={() => {}}>
-          <FontAwesome name="ellipsis-h" size={18} color={c.textoSecundario} />
-        </TouchableOpacity>
+        <MenuCard
+          linkId={link.link_id}
+          categoriaActualId={link.categoria_id}
+          onEliminado={onEliminado}
+          onMovido={onMovido}
+        />
 
       </View>
 
       {/* FILA 2 - Imagen */}
-      {urlImagen ? (
-        <TouchableOpacity onPress={abrirUrl} activeOpacity={0.9}>
-          <View style={styles.fila2}>
+      <TouchableOpacity onPress={abrirUrl} activeOpacity={0.9}>
+        <View style={styles.fila2}>
+          {urlImagen ? (
             <Image
               source={{ uri: urlImagen }}
               style={styles.imagen}
-              resizeMode="cover"
+              resizeMode="contain"
               onError={() => setImageRatio(null)}
             />
-          </View>
-        </TouchableOpacity>
-      ) : (
-        <View style={styles.fila2} />
-      )}
+          ) : (
+            <View style={styles.sinImagen}>
+              <FontAwesome name="link" size={20} color={c.muted} />
+              <Text style={styles.sinImagenTexto} numberOfLines={2}>{link.link_url}</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
 
       {/* FILA 3 */}
       <View style={styles.fila3}>
@@ -174,7 +192,7 @@ export default function CardInstagram({ link }: CardInstagramProps) {
           {/* Columna izquierda — tags */}
           <View style={styles.tagsContenedor}>
             {link.tags.map((tag, index) => (
-              <TouchableOpacity key={index} style={styles.tagPill} onPress={() => {}}>
+              <TouchableOpacity key={index} style={styles.tagPill} onPress={() => { }}>
                 <Text style={styles.tagTexto}>{tag}</Text>
               </TouchableOpacity>
             ))}
@@ -267,9 +285,11 @@ function crearEstilos(c: typeof colores.dark, cardWidth: number, imageRatio: num
       flexShrink: 0,
     },
     fila2: {
-      ...(imageRatio !== null ? { aspectRatio: imageRatio } : { height: 200 }),
+      height: imageRatio !== null
+        ? Math.min(IMG_ALTURA_MAX, cardWidth / imageRatio)
+        : ALTURA_NO_IMG,
       backgroundColor: tema === 'dark' ? '#000000' : '#ffffff',
-      borderRadius: espaciado.bordes.lg,
+      borderRadius: cardWidth >= 480 ? espaciado.bordes.lg : 0,
       borderWidth: 1,
       borderColor: c.borde,
       overflow: 'hidden',
@@ -322,6 +342,19 @@ function crearEstilos(c: typeof colores.dark, cardWidth: number, imageRatio: num
       fontFamily: tipografia.fuentes.cuerpo,
       fontSize: tipografia.sizes.xs,
       lineHeight: tipografia.lineHeight.sm,
+    },
+    sinImagen: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: espaciado.sm,
+      paddingHorizontal: espaciado.lg,
+    },
+    sinImagenTexto: {
+      fontFamily: tipografia.fuentes.mono,
+      fontSize: tipografia.sizes.xs,
+      color: c.muted,
+      textAlign: 'center',
     },
   });
 }
