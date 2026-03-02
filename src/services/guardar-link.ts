@@ -8,7 +8,7 @@ const API = API_BASE;
 export interface Metadatos {
   title: string;
   description: string;
-  url_imagen: string;   // era: image
+  url_imagen: string;
   site_name: string;
   url: string;
 }
@@ -120,7 +120,7 @@ export async function asignarTag(link_id: number, tag_id: number): Promise<void>
   }
 }
 
-// ─── Flujo completo ───────────────────────────────────────
+// ─── Flujo completo link ──────────────────────────────────
 
 export async function guardarLinkCompleto(
   url: string,
@@ -129,17 +129,14 @@ export async function guardarLinkCompleto(
   nombre_manual?: string
 ): Promise<number> {
 
-  // 1. Metadatos
   const meta = await obtenerMetadatos(url);
 
-  // 2. Subir imagen
   let ruta_img: string | undefined;
-  if (meta.url_imagen) {                          // era: meta.image
+  if (meta.url_imagen) {
     try {
-      ruta_img = await subirImagen(meta.url_imagen); // era: meta.image
-      //console.log('ruta_img',ruta_img);
+      ruta_img = await subirImagen(meta.url_imagen);
     } catch {
-      // Si falla la imagen, continuamos sin ella
+      // Si falla la imagen continuamos sin ella
     }
   }
 
@@ -149,25 +146,40 @@ export async function guardarLinkCompleto(
     link_nombre: nombre_manual || meta.title,
     link_texto_titulo: meta.title,
     link_texto_description: meta.description,
-    link_url_img: meta.url_imagen,               // era: meta.image
+    link_url_img: meta.url_imagen,
     link_ruta_img: ruta_img,
     link_site: meta.site_name,
   });
 
-  /*
-  console.log('datos link:', JSON.stringify({
-    link_url: url,
-    link_cat_id: cat_id,
-    link_nombre: nombre_manual || meta.title,
-    link_texto_titulo: meta.title,
-    link_texto_description: meta.description,
-    link_url_img: meta.url_imagen,
-    link_ruta_img: ruta_img,
-    link_site: meta.site_name,
-  }));
-  */
+  for (const tag_id of tags_ids) {
+    await asignarTag(link_id, tag_id);
+  }
 
-  // 4. Asignar tags
+  return link_id;
+}
+
+// ─── Flujo completo imagen ────────────────────────────────
+
+export async function guardarImagenCompleto(
+  ruta_img: string,
+  cat_id: number,
+  tags_ids: number[],
+  nombre?: string,
+  url_link?: string,
+  descripcion?: string,
+  site?: string,
+): Promise<number> {
+
+  const link_id = await insertarLink({
+    link_url: url_link || '',
+    link_cat_id: cat_id,
+    link_nombre: nombre || 'Imagen',
+    link_texto_titulo: nombre,
+    link_texto_description: descripcion,
+    link_site: site,
+    link_ruta_img: ruta_img,
+  });
+
   for (const tag_id of tags_ids) {
     await asignarTag(link_id, tag_id);
   }

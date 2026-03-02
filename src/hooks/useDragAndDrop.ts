@@ -9,7 +9,6 @@ export function useDragAndDrop() {
   useEffect(() => {
     if (Platform.OS !== 'web') return;
 
-    // Contador para evitar falsos dragleave al pasar sobre elementos hijos
     let contadorDrag = 0;
 
     function alArrastrarEncima(e: DragEvent) {
@@ -33,9 +32,36 @@ export function useDragAndDrop() {
       contadorDrag = 0;
       setArrastrando(false);
 
+      const items = e.dataTransfer?.items;
+      if (!items) return;
+
+      // ── Comprobar si hay archivo de imagen ─────────────
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.kind === 'file' && item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (!file) continue;
+
+          const reader = new FileReader();
+          reader.onload = () => {
+            const base64 = (reader.result as string).split(',')[1];
+            router.push({
+              pathname: '/guardar-link',
+              params: {
+                imagenBase64: base64,
+                imagenMime: file.type,
+                imagenNombre: file.name,
+              },
+            });
+          };
+          reader.readAsDataURL(file);
+          return;
+        }
+      }
+
+      // ── Comprobar si hay URL de texto ──────────────────
       const texto = e.dataTransfer?.getData('text/plain') ?? '';
       const urlDetectada = extraerUrl(texto);
-
       if (urlDetectada) {
         router.push({
           pathname: '/guardar-link',

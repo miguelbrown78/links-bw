@@ -96,9 +96,12 @@ function NavegacionInterna() {
   const router = useRouter();
   const segments = useSegments();
 
+  // Redirección por auth
   useEffect(() => {
     if (cargando) return;
+
     const enLogin = segments[0] === 'login';
+
     if (!usuario && !enLogin) {
       router.replace('/login');
     } else if (usuario && enLogin) {
@@ -106,15 +109,35 @@ function NavegacionInterna() {
     }
   }, [usuario, cargando, segments]);
 
+  // Redirección por share intent
   useEffect(() => {
     if (!hasShareIntent) return;
     if (cargando || !usuario) return;
-    const url = shareIntent.text ?? '';
+
+    // ── Imagen compartida ──
+    const archivos = shareIntent.files ?? [];
+    const imagen = archivos.find((f) => f.mimeType?.startsWith('image/'));
+    if (imagen) {
+      router.push({
+        pathname: '/guardar-link',
+        params: {
+          imagenUri: imagen.path,
+          imagenMime: imagen.mimeType,
+          imagenNombre: imagen.fileName ?? 'imagen',
+        },
+      });
+      resetShareIntent();
+      return;
+    }
+
+    // ── URL compartida ──
+    const url = shareIntent.text ?? shareIntent.webUrl ?? '';
     if (url) {
       router.push({
         pathname: '/guardar-link',
         params: { urlCompartida: url },
       });
+      resetShareIntent();
     }
   }, [hasShareIntent, shareIntent, cargando, usuario]);
 
