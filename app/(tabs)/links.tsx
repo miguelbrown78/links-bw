@@ -1,12 +1,16 @@
+// app/(tabs)/links.tsx
+
 import Boton from '@/components/Boton';
 import CardInstagram from '@/components/links/CardInstagram';
-import { useTema } from '@/context/TemaContext';
+import FiltroPills from '@/components/links/FiltroPills';
 import { useBuscador } from '@/context/BuscadorContext';
-import { Link, traerLinks, buscarLinks, LINKS_POR_PAGINA } from '@/services/links';
+import { useFiltro } from '@/context/FiltroContext';
+import { useTema } from '@/context/TemaContext';
+import { buscarLinks, filtrarLinksPorCategoriaOTag, Link, LINKS_POR_PAGINA, traerLinks } from '@/services/links';
 import { colores, espaciado, tipografia } from '@/styles';
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { useFocusEffect } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 type Vista = 'instagram' | 'explorer';
@@ -16,6 +20,7 @@ export default function MisLinks() {
   const { tema } = useTema();
   const c = tema === 'dark' ? colores.dark : colores.light;
   const { textoBusqueda } = useBuscador();
+  const { seleccionados } = useFiltro();
   const [vista, setVista] = useState<Vista>('instagram');
   const [links, setLinks] = useState<Link[]>([]);
   const [cargando, setCargando] = useState(true);
@@ -26,13 +31,14 @@ export default function MisLinks() {
   const offsetRef = useRef(0);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const enBusquedaRef = useRef(false);
+  const enFiltroRef = useRef(false);
   const flatListRef = useRef<FlatList>(null);
   const styles = crearEstilos(c);
 
   // ── Carga inicial al entrar en la pantalla ──
   useFocusEffect(
     useCallback(() => {
-      if (!textoBusqueda) {
+      if (!textoBusqueda && seleccionados.length === 0) {
         reiniciarYCargar();
       }
     }, [])
@@ -45,7 +51,7 @@ export default function MisLinks() {
     if (textoBusqueda.length < CARACT_MIN_BUSQ) {
       if (enBusquedaRef.current) {
         enBusquedaRef.current = false;
-        reiniciarYCargar();
+        if (seleccionados.length === 0) reiniciarYCargar();
       }
       return;
     }
@@ -59,6 +65,17 @@ export default function MisLinks() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, [textoBusqueda]);
+
+  // ── Cuando cambian los filtros ──
+  useEffect(() => {
+    if (seleccionados.length > 0) {
+      enFiltroRef.current = true;
+      reiniciarYFiltrar();
+    } else if (enFiltroRef.current) {
+      enFiltroRef.current = false;
+      reiniciarYCargar();
+    }
+  }, [seleccionados]);
 
   // ── Reiniciar estado y cargar links normales ──
   async function reiniciarYCargar() {
@@ -78,7 +95,7 @@ export default function MisLinks() {
     }
   }
 
-  // ── Reiniciar estado y buscar ──
+  // ── Reiniciar estado y buscar por texto ──
   async function reiniciarYBuscar(texto: string) {
     try {
       offsetRef.current = 0;
@@ -96,16 +113,38 @@ export default function MisLinks() {
     }
   }
 
+  // ── Reiniciar estado y filtrar por categoría/tag ──
+  async function reiniciarYFiltrar() {
+    try {
+      offsetRef.current = 0;
+      setHayMas(true);
+      setCargando(true);
+      setError(null);
+      const datos = await filtrarLinksPorCategoriaOTag(seleccionados, 0);
+      setLinks(datos);
+      setHayMas(datos.length === LINKS_POR_PAGINA);
+      offsetRef.current = datos.length;
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setCargando(false);
+    }
+  }
+
   // ── Cargar más al llegar al final ──
   async function cargarMas() {
     if (cargandoMas || !hayMas || cargando) return;
 
     try {
       setCargandoMas(true);
-      const datos = enBusquedaRef.current
-        ? await buscarLinks(textoBusqueda, offsetRef.current)
-        : await traerLinks(offsetRef.current);
-
+      let datos: Link[];
+      if (enBusquedaRef.current) {
+        datos = await buscarLinks(textoBusqueda, offsetRef.current);
+      } else if (enFiltroRef.current) {
+        datos = await filtrarLinksPorCategoriaOTag(seleccionados, offsetRef.current);
+      } else {
+        datos = await traerLinks(offsetRef.current);
+      }
       setLinks((prev) => [...prev, ...datos]);
       setHayMas(datos.length === LINKS_POR_PAGINA);
       offsetRef.current += datos.length;
@@ -124,11 +163,20 @@ export default function MisLinks() {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
   }
 
+  function alRefrescar() {
+    if (seleccionados.length > 0) {
+      reiniciarYFiltrar();
+    } else {
+      reiniciarYCargar();
+    }
+  }
+
   return (
     <View style={styles.container}>
 
       {/* ── Barra de vistas ── */}
       <View style={styles.barraVistas}>
+        <FiltroPills />
         <Boton
           tipo="primario"
           label="Posts"
@@ -143,12 +191,14 @@ export default function MisLinks() {
           onPress={() => setVista('explorer')}
           activo={vista === 'explorer'}
         />
-        {textoBusqueda.length >= CARACT_MIN_BUSQ && !cargando && (
-          <Text style={styles.textoResultados}>
-            {links.length} resultado{links.length !== 1 ? 's' : ''} para "{textoBusqueda}"
-          </Text>
-        )}
       </View>
+
+      {/* ── Resultados de búsqueda ── */}
+      {textoBusqueda.length >= CARACT_MIN_BUSQ && !cargando && (
+        <Text style={styles.textoResultados}>
+          {links.length} resultado{links.length !== 1 ? 's' : ''} para "{textoBusqueda}"
+        </Text>
+      )}
 
       {/* ── Cargando inicial ── */}
       {cargando && (
@@ -171,6 +221,8 @@ export default function MisLinks() {
           <Text style={styles.textoMuted}>
             {textoBusqueda.length >= CARACT_MIN_BUSQ
               ? `Sin resultados para "${textoBusqueda}"`
+              : seleccionados.length > 0
+              ? 'Sin links para los filtros seleccionados.'
               : 'No tienes links guardados aún.'}
           </Text>
         </View>
@@ -186,7 +238,7 @@ export default function MisLinks() {
             <CardInstagram
               link={item}
               onEliminado={() => setLinks((prev) => prev.filter((l) => l.link_id !== item.link_id))}
-              onMovido={() => reiniciarYCargar()}
+              onMovido={alRefrescar}
             />
           )}
           contentContainerStyle={styles.lista}
@@ -228,18 +280,19 @@ function crearEstilos(c: typeof colores.dark) {
     },
     barraVistas: {
       flexDirection: 'row',
-      justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: espaciado.lg,
       paddingVertical: espaciado.md,
       gap: espaciado.sm,
       borderBottomColor: c.borde,
+      borderBottomWidth: 1,
     },
     textoResultados: {
       fontFamily: tipografia.fuentes.cuerpo,
       fontSize: tipografia.sizes.sm,
       color: c.muted,
-      marginLeft: espaciado.sm,
+      paddingHorizontal: espaciado.lg,
+      paddingBottom: espaciado.xs,
     },
     centro: {
       flex: 1,

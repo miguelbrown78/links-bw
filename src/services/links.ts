@@ -1,3 +1,6 @@
+// src/services/links.ts
+
+import { FiltroItem } from '@/components/links/FiltroPills';
 import { API_BASE } from '@/constants/api';
 import { obtener } from '@/services/storage';
 
@@ -115,6 +118,65 @@ export async function buscarLinks(texto: string, offset: number = 0): Promise<Li
   return normalizarLinks(datos.results);
 }
 
+// ─── Filtrar links por categoría o tag (OR) ───────────────
+export async function filtrarLinksPorCategoriaOTag(
+  filtros: FiltroItem[],
+  offset: number = 0
+): Promise<Link[]> {
+  const cabeceras = await obtenerCabeceras();
+  const userId = await obtener('user_id');
+
+  if (!userId) throw new Error('No hay sesión activa.');
+
+  const categoriaIds = filtros
+    .filter((f) => f.tipo === 'categoria')
+    .map((f) => f.id);
+
+  const tagIds = filtros
+    .filter((f) => f.tipo === 'tag')
+    .map((f) => f.id);
+
+  const condiciones: string[] = [];
+  const params: Record<string, any> = {
+    ':user_id': parseInt(userId),
+    ':limite': LINKS_POR_PAGINA,
+    ':offset': offset,
+  };
+
+  // ── Condiciones por categoría ──
+  categoriaIds.forEach((id, i) => {
+    condiciones.push(`categoria_id = :cat_${i}`);
+    params[`:cat_${i}`] = id;
+  });
+
+  // ── Condiciones por tag ──
+  tagIds.forEach((id, i) => {
+    condiciones.push(`FIND_IN_SET(:tag_${i}, REPLACE(tags_ids, ', ', ',')) > 0`);
+    params[`:tag_${i}`] = String(id);
+  });
+
+  const where = condiciones.length > 0
+    ? `AND (${condiciones.join(' OR ')})`
+    : '';
+
+  const respuesta = await fetch(`${API}/select.php`, {
+    method: 'POST',
+    headers: cabeceras,
+    body: JSON.stringify({
+      sql: `SELECT * FROM view_links_completa
+            WHERE users_id = :user_id
+            ${where}
+            ORDER BY link_DATE_INSERT DESC
+            LIMIT :limite OFFSET :offset`,
+      params,
+    }),
+  });
+
+  const datos = await respuesta.json();
+  if (!datos.ok) throw new Error(datos.error || 'Error al filtrar links');
+
+  return normalizarLinks(datos.results);
+}
 
 // ─── Eliminar link ────────────────────────────────────────
 export async function eliminarLink(link_id: number): Promise<void> {
