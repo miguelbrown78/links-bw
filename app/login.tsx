@@ -1,20 +1,17 @@
 import { useState } from 'react';
 import {
     View, Text, TextInput, StyleSheet,
-    ActivityIndicator, KeyboardAvoidingView, Platform, Pressable,
+    ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, Image,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { colores, tipografia, espaciado } from '@/styles';
 import { useTema } from '@/context/TemaContext';
 import { useAuth } from '@/context/AuthContext';
-import { Image } from 'react-native';
 
 export default function Login() {
     const { tema } = useTema();
     const c = tema === 'dark' ? colores.dark : colores.light;
     const styles = crearEstilos(c);
     const { login } = useAuth();
-    const router = useRouter();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -30,7 +27,7 @@ export default function Login() {
             setCargando(true);
             setError(null);
             await login(email, password);
-            router.replace('/(tabs)');
+            // La redirección la gestiona _layout.tsx al detectar el cambio de usuario
         } catch (e: any) {
             setError(e.message || 'Error al iniciar sesión.');
         } finally {

@@ -3,7 +3,7 @@ import { colores, espaciado, tipografia } from '@/styles';
 import { useTema } from '@/context/TemaContext';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useRouter, useSegments } from 'expo-router';
-import { Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 
 export default function BuscadorHeader() {
   const { tema } = useTema();
@@ -14,11 +14,9 @@ export default function BuscadorHeader() {
   const { width } = useWindowDimensions();
   const styles = crearEstilos(c, width);
 
-
   function alCambiarTexto(texto: string) {
     setTextoBusqueda(texto);
 
-    // Si no estamos en Mis Links, navegar allí
     const enLinks = segments[segments.length - 1] === 'links';
     if (!enLinks && texto.length > 0) {
       router.push('/(tabs)/links');
@@ -41,9 +39,11 @@ export default function BuscadorHeader() {
         autoCapitalize="none"
         returnKeyType="search"
         clearButtonMode="never"
-        tabIndex={0}
-        autoFocus
-        onFocus={(e: any) => e.target.style.outline = 'none'}
+        onFocus={(e: any) => {
+          if (Platform.OS === 'web') {
+            e.target.style.outline = 'none';
+          }
+        }}
       />
       {textoBusqueda.length > 0 && (
         <Pressable onPress={alLimpiar}>
@@ -55,10 +55,10 @@ export default function BuscadorHeader() {
 }
 
 function calcularMaxWidth(width: number): number {
-  if (width < 480) return 20;   // móvil pequeño
-  if (width < 768) return 200;  // móvil grande
-  if (width < 1024) return 300;  // tablet
-  return 300;                   // escritorio
+  if (width < 480) return 20;
+  if (width < 768) return 200;
+  if (width < 1024) return 300;
+  return 300;
 }
 
 function crearEstilos(c: typeof colores.dark, width: number) {
@@ -75,9 +75,7 @@ function crearEstilos(c: typeof colores.dark, width: number) {
       paddingVertical: espaciado.sm,
       gap: espaciado.sm,
       marginHorizontal: espaciado.md,
-
     },
-
     input: {
       flex: 1,
       fontFamily: tipografia.fuentes.cuerpo,
