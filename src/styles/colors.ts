@@ -2,53 +2,53 @@
 export const COLOR_1 = '#a21d30';
 
 const colores = {
-  primario:   '#a21d30',
+  primario: '#a21d30',
   secundario: '#8B5CF6',
-  error:      '#EF4444',
-  success:    '#22C55E',
+  error: '#EF4444',
+  success: '#22C55E',
 
   tag: '#F97316',
 
   dark: {
-  fondo: '#080808ff',
-  card: '#0f0f0f',
-  texto: '#ffe5e7',
-  textoSecundario: '#d4868f',  // ← nuevo
-  muted: '#a59495',
-  borde: '#1f1314ff',
-},
+    fondo: '#080808ff',
+    card: '#0f0f0f',
+    texto: '#ffe5e7',
+    textoSecundario: '#d4868f',  // ← nuevo
+    muted: '#a59495',
+    borde: '#1f1314ff',
+  },
 
-light: {
-  fondo: '#fff0f1',
-  card: '#ffffff',
-  texto: '#1b0002',
-  textoSecundario: '#6b1020',  // ← nuevo
-  muted: '#cbb2b4',
-  borde: '#ffdfe2',
-},
+  light: {
+    fondo: '#fff0f1',
+    card: '#ffffff',
+    texto: '#1b0002',
+    textoSecundario: '#6b1020',  // ← nuevo
+    muted: '#cbb2b4',
+    borde: '#ffdfe2',
+  },
 
   componentes: {
     boton: {
       texto: '#ffffff',
       dark: {
-        primarioHover:    '#f76e7a',
-        primarioPress:    '#f77d87',
-        secundarioHover:  '#9b6ef7',
-        secundarioPress:  '#a37ef8',
+        primarioHover: '#f76e7a',
+        primarioPress: '#f77d87',
+        secundarioHover: '#9b6ef7',
+        secundarioPress: '#a37ef8',
         destructivoHover: '#f25f5f',
         destructivoPress: '#f47070',
-        fantasmaHover:    '#f55b6822',
-        fantasmaPress:    '#f55b6844',
+        fantasmaHover: '#f55b6822',
+        fantasmaPress: '#f55b6844',
       },
       light: {
-        primarioHover:    '#e04452',
-        primarioPress:    '#cc3a47',
-        secundarioHover:  '#7a4de0',
-        secundarioPress:  '#6a3ecc',
+        primarioHover: '#e04452',
+        primarioPress: '#cc3a47',
+        secundarioHover: '#7a4de0',
+        secundarioPress: '#6a3ecc',
         destructivoHover: '#d93333',
         destructivoPress: '#c42a2a',
-        fantasmaHover:    '#f55b6833',
-        fantasmaPress:    '#f55b6855',
+        fantasmaHover: '#f55b6833',
+        fantasmaPress: '#f55b6855',
       },
     },
   },
@@ -57,11 +57,6 @@ light: {
 export default colores;
 
 // ─── Colores base ─────────────────────────────────────────
-
-
-
-
-
 
 /************************************** */
 const HUE1 = hexAHue(COLOR_1);
@@ -89,8 +84,8 @@ function hexAHue(hex: string): number {
   let h = 0;
   switch (max) {
     case r: h = ((g - b) / delta) % 6; break;
-    case g: h = (b - r) / delta + 2;   break;
-    case b: h = (r - g) / delta + 4;   break;
+    case g: h = (b - r) / delta + 2; break;
+    case b: h = (r - g) / delta + 4; break;
   }
   h = Math.round(h * 60);
   if (h < 0) h += 360;

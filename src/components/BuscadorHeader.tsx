@@ -1,9 +1,14 @@
+// src/components/BuscadorHeader.tsx
+
 import { useBuscador } from '@/context/BuscadorContext';
-import { colores, espaciado, tipografia } from '@/styles';
 import { useTema } from '@/context/TemaContext';
+import { colores, espaciado, tipografia } from '@/styles';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useRouter, useSegments } from 'expo-router';
-import { Platform, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { Dimensions, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+
+const { width: ANCHO_PANTALLA } = Dimensions.get('window');
+const ANCHO_INPUT = ANCHO_PANTALLA - 90 - 90 - 40 - 48;
 
 export default function BuscadorHeader() {
   const { tema } = useTema();
@@ -11,12 +16,10 @@ export default function BuscadorHeader() {
   const { textoBusqueda, setTextoBusqueda } = useBuscador();
   const router = useRouter();
   const segments = useSegments();
-  const { width } = useWindowDimensions();
-  const styles = crearEstilos(c, width);
+  const styles = crearEstilos(c);
 
   function alCambiarTexto(texto: string) {
     setTextoBusqueda(texto);
-
     const enLinks = segments[segments.length - 1] === 'links';
     if (!enLinks && texto.length > 0) {
       router.push('/(tabs)/links');
@@ -34,11 +37,14 @@ export default function BuscadorHeader() {
         style={styles.input}
         value={textoBusqueda}
         onChangeText={alCambiarTexto}
-        placeholder="..."
+        placeholder="Buscar..."
         placeholderTextColor={c.muted}
         autoCapitalize="none"
         returnKeyType="search"
         clearButtonMode="never"
+        underlineColorAndroid="transparent"
+        selectionColor={colores.primario}
+        cursorColor={colores.primario}
         onFocus={(e: any) => {
           if (Platform.OS === 'web') {
             e.target.style.outline = 'none';
@@ -54,20 +60,11 @@ export default function BuscadorHeader() {
   );
 }
 
-function calcularMaxWidth(width: number): number {
-  if (width < 480) return 20;
-  if (width < 768) return 200;
-  if (width < 1024) return 300;
-  return 300;
-}
-
-function crearEstilos(c: typeof colores.dark, width: number) {
+function crearEstilos(c: typeof colores.dark) {
   return StyleSheet.create({
     contenedor: {
-      flex: 1,
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: c.card,
       borderWidth: 1,
       borderColor: c.borde,
       borderRadius: espaciado.bordes.full,
@@ -75,6 +72,8 @@ function crearEstilos(c: typeof colores.dark, width: number) {
       paddingVertical: espaciado.sm,
       gap: espaciado.sm,
       marginHorizontal: espaciado.md,
+      width: 120,                 // ← fijo duro para test
+      height: 35,                 // ← fijo duro para test
     },
     input: {
       flex: 1,
@@ -82,7 +81,8 @@ function crearEstilos(c: typeof colores.dark, width: number) {
       fontSize: tipografia.sizes.sm,
       color: c.texto,
       padding: 0,
-      width: calcularMaxWidth(width),
+      //width: 150,                 // ← fijo duro para test
+      height: 40,                 // ← fijo duro para test            
     } as any,
   });
 }
